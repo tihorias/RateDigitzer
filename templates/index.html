@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PDF Excel Comparator</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    #progress-bar {
+      height: 50px; /* increased thickness */
+    }
+    #cancel-btn {
+      margin-top: 10px;
+    }
+    .dropzone {
+      border: 2px dashed #6c757d;
+      border-radius: 0.375rem;
+      padding: 1.5rem;
+      text-align: center;
+      color: #6c757d;
+      cursor: pointer;
+      transition: background-color 0.3s, border-color 0.3s;
+      user-select: none;
+    }
+    .dropzone.dragover {
+      background-color: #e9f5ff;
+      border-color: #0d6efd;
+      color: #0d6efd;
+    }
+    .file-list {
+      margin-top: 0.75rem;
+      max-height: 140px;
+      overflow-y: auto;
+      font-size: 0.9rem;
+      border: 1px solid #dee2e6;
+      border-radius: 0.375rem;
+      padding: 0.5rem 1rem;
+      background-color: #f8f9fa;
+    }
+    .file-list-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.25rem 0;
+      border-bottom: 1px solid #e9ecef;
+    }
+    .file-list-item:last-child {
+      border-bottom: none;
+    }
+    .file-icon {
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+    .file-name {
+      flex-grow: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .file-size {
+      color: #6c757d;
+      font-size: 0.85rem;
+      margin-left: 10px;
+      white-space: nowrap;
+    }
+    .validation-error {
+      color: #dc3545;
+      font-size: 0.9rem;
+      margin-top: 0.25rem;
+    }
+  </style>
+</head>
+<body class="bg-light">
+  <div class="container py-5">
+    <div class="card shadow-sm p-4">
+      <div style="position: relative; margin-bottom: 1.5rem; height: 50px;">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo"
+             style="max-height: 50px; position: absolute; left: 0; top: 0;">
+        <h1 class="text-primary mb-0" style="text-align: center; line-height: 50px; margin: 0;">
+          LTC Rate Digitizer
+        </h1>
+      </div>
+
+      <form id="upload-form" enctype="multipart/form-data" novalidate>
+        <!-- Excel Dropzone -->
+        <div class="mb-3">
+          <label for="excel_files" class="form-label fw-semibold">Select the Excel Files:</label>
+          <div id="excel-dropzone" class="dropzone" tabindex="0">
+            Drag &amp; drop Excel files here or click to select
+          </div>
+          <input type="file" class="form-control d-none" id="excel_files" name="excel_files" multiple accept=".xlsx,.xls" required />
+          <div id="excel_files_list" class="file-list" aria-live="polite" aria-relevant="additions"></div>
+          <div id="excel_files_error" class="validation-error" role="alert"></div>
+        </div>
+
+        <!-- PDF Dropzone -->
+        <div class="mb-3">
+          <label for="pdf_files" class="form-label fw-semibold">Select the PDF Files:</label>
+          <div id="pdf-dropzone" class="dropzone" tabindex="0">
+            Drag &amp; drop PDF files here or click to select
+          </div>
+          <input type="file" class="form-control d-none" id="pdf_files" name="pdf_files" multiple accept=".pdf" required />
+          <div id="pdf_files_list" class="file-list" aria-live="polite" aria-relevant="additions"></div>
+          <div id="pdf_files_error" class="validation-error" role="alert"></div>
+        </div>
+
+        <div class="d-grid">
+          <button type="submit" id="submit-btn" class="btn btn-primary">Start Processing...</button>
+        </div>
+      </form>
+
+      <div id="progress-wrapper" class="mt-4 d-none">
+        <div class="progress">
+          <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;">0%</div>
+        </div>
+        <div id="progress-text" class="text-center mt-2 text-muted"></div>
+        <button id="cancel-btn" class="btn btn-warning btn-sm d-none">Cancel</button>
+      </div>
+
+      <div class="mt-4 text-center">
+        <a href="/results" class="btn btn-success d-none" id="view-results">View Results</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const MAX_FILE_SIZE_MB = 10;
+
+    const form = document.getElementById('upload-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const progressWrapper = document.getElementById('progress-wrapper');
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    const viewResults = document.getElementById('view-results');
+    const cancelBtn = document.getElementById('cancel-btn');
+
+    const excelInput = document.getElementById('excel_files');
+    const pdfInput = document.getElementById('pdf_files');
+
+    const excelDropzone = document.getElementById('excel-dropzone');
+    const pdfDropzone = document.getElementById('pdf-dropzone');
+
+    const excelList = document.getElementById('excel_files_list');
+    const pdfList = document.getElementById('pdf_files_list');
+    const excelError = document.getElementById('excel_files_error');
+    const pdfError = document.getElementById('pdf_files_error');
+
+    let intervalId = null;
+    let redirectTimeoutId = null;
+
+    function formatFileSize(size) {
+      return (size / 1024 / 1024).toFixed(2) + " MB";
+    }
+
+    function createFileIcon(ext) {
+      // Simple icons for XLS/XLSX and PDF
+      const svgExcel = `<svg class="file-icon" fill="#217346" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 2H9a2 2 0 0 0-2 2v4h2V4h8v16h-3v2h4a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z"/><path d="M3 8h3v8H3zM8 14.5c-.09 0-.18-.01-.26-.02l-.02-.02-.02-.01c-.06-.02-.12-.06-.18-.12-.06-.06-.1-.12-.12-.18l-.01-.02c0-.08-.01-.17-.01-.26v-4h2v3.97l-1.4-.01zm-1.42-3h.99v2.04h-.99z"/></svg>`;
+      const svgPDF = `<svg class="file-icon" fill="#d93025" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 2h9l5 5v15a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v16h12V7h-5V4H6z"/><path d="M8 12h3v2H8z"/></svg>`;
+      if (ext === 'pdf') return svgPDF;
+      if (ext === 'xls' || ext === 'xlsx') return svgExcel;
+      return '';
+    }
+
+    function updateFileList(inputElem, listElem, errorElem, allowedExtensions) {
+      const files = Array.from(inputElem.files);
+      listElem.innerHTML = '';
+      errorElem.textContent = '';
+
+      if(files.length === 0) {
+        return;
+      }
+
+      let invalidFiles = [];
+
+      files.forEach(file => {
+        const ext = file.name.split('.').pop().toLowerCase();
+        if (!allowedExtensions.includes(ext)) {
+          invalidFiles.push(file.name);
+          return;
+        }
+        if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+          invalidFiles.push(file.name + " (too large: " + formatFileSize(file.size) + ")");
+          return;
+        }
+
+        const item = document.createElement('div');
+        item.className = 'file-list-item';
+
+        const iconSpan = document.createElement('span');
+        iconSpan.innerHTML = createFileIcon(ext);
+
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'file-name';
+        nameSpan.title = file.name;
+        nameSpan.textContent = file.name;
+
+        const sizeSpan = document.createElement('span');
+        sizeSpan.className = 'file-size';
+        sizeSpan.textContent = formatFileSize(file.size);
+
+        item.appendChild(iconSpan);
+        item.appendChild(nameSpan);
+        item.appendChild(sizeSpan);
+
+        listElem.appendChild(item);
+      });
+
+      if(invalidFiles.length > 0) {
+        errorElem.textContent = `Invalid or too large file(s): ${invalidFiles.join(', ')}`;
+      }
+    }
+
+    function validateFiles() {
+      let valid = true;
+      excelError.textContent = '';
+      pdfError.textContent = '';
+
+      if (excelInput.files.length === 0) {
+        excelError.textContent = 'Please select at least one Excel file.';
+        valid = false;
+      }
+      if (pdfInput.files.length === 0) {
+        pdfError.textContent = 'Please select at least one PDF file.';
+        valid = false;
+      }
+
+      updateFileList(excelInput, excelList, excelError, ['xlsx', 'xls']);
+      updateFileList(pdfInput, pdfList, pdfError, ['pdf']);
+
+      if (excelError.textContent || pdfError.textContent) {
+        valid = false;
+      }
+
+      return valid;
+    }
+
+    function resetUI() {
+      progressWrapper.classList.add('d-none');
+      progressBar.style.width = '0%';
+      progressBar.textContent = '0%';
+      progressText.textContent = '';
+      viewResults.classList.add('d-none');
+      cancelBtn.classList.add('d-none');
+      submitBtn.disabled = false;
+    }
+
+    // Helper to handle dropzone styling and file setting
+    function setupDropzone(dropzoneElem, inputElem, allowedExtensions) {
+      dropzoneElem.addEventListener('click', () => inputElem.click());
+
+      dropzoneElem.addEventListener('dragenter', e => {
+        e.preventDefault();
+        dropzoneElem.classList.add('dragover');
+      });
+
+      dropzoneElem.addEventListener('dragover', e => {
+        e.preventDefault();
+        dropzoneElem.classList.add('dragover');
+      });
+
+      dropzoneElem.addEventListener('dragleave', e => {
+        e.preventDefault();
+        dropzoneElem.classList.remove('dragover');
+      });
+
+      dropzoneElem.addEventListener('drop', e => {
+        e.preventDefault();
+        dropzoneElem.classList.remove('dragover');
+
+        const files = e.dataTransfer.files;
+        const validFiles = [];
+
+        // We can't directly set inputElem.files for security reasons,
+        // so we create a DataTransfer object if supported
+        if (window.DataTransfer) {
+          const dt = new DataTransfer();
+          for (let file of files) {
+            const ext = file.name.split('.').pop().toLowerCase();
+            if (allowedExtensions.includes(ext)) {
+              dt.items.add(file);
+            }
+          }
+          inputElem.files = dt.files;
+        } else {
+          // fallback: warn user
+          alert("Your browser doesn't support drag & drop properly. Please use the file selector.");
+          return;
+        }
+
+        // Trigger change event manually to update UI
+        const event = new Event('change');
+        inputElem.dispatchEvent(event);
+      });
+
+      // Keyboard accessibility for dropzone click
+      dropzoneElem.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          inputElem.click();
+        }
+      });
+    }
+
+    excelInput.addEventListener('change', () => {
+      updateFileList(excelInput, excelList, excelError, ['xlsx', 'xls']);
+    });
+
+    pdfInput.addEventListener('change', () => {
+      updateFileList(pdfInput, pdfList, pdfError, ['pdf']);
+    });
+
+    setupDropzone(excelDropzone, excelInput, ['xlsx', 'xls']);
+    setupDropzone(pdfDropzone, pdfInput, ['pdf']);
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      if (!validateFiles()) {
+        return;
+      }
+
+      const formData = new FormData(form);
+
+      submitBtn.disabled = true;
+      progressWrapper.classList.remove('d-none');
+      progressBar.style.width = '0%';
+      progressBar.textContent = '0%';
+      progressBar.classList.add('progress-bar-animated');
+      progressBar.classList.remove('bg-danger');
+      progressBar.classList.add('bg-primary');
+      progressText.textContent = 'Uploading files and starting processing...';
+      viewResults.classList.add('d-none');
+      cancelBtn.classList.remove('d-none');
+
+      fetch('/process', {
+        method: 'POST',
+        body: formData
+      })
+        .then(response => response.json())
+        .then(data => {
+          intervalId = setInterval(() => {
+            fetch('/progress')
+              .then(res => res.json())
+              .then(progress => {
+                progressBar.style.width = `${progress.percentage}%`;
+                progressBar.textContent = `${progress.percentage}%`;
+                progressText.textContent = progress.status;
+
+                if (progress.status === 'Completed') {
+                  clearInterval(intervalId);
+                  progressBar.classList.remove('progress-bar-animated');
+                  progressText.textContent = "Processing complete!";
+                  viewResults.classList.remove('d-none');
+                  cancelBtn.classList.add('d-none');
+
+                  // Removed auto redirect here
+                  submitBtn.disabled = false;
+                } else if (progress.status.startsWith('Error')) {
+                  clearInterval(intervalId);
+                  progressBar.classList.remove('bg-primary');
+                  progressBar.classList.add('bg-danger');
+                  progressBar.classList.remove('progress-bar-animated');
+                  progressText.textContent = progress.status;
+                  cancelBtn.classList.add('d-none');
+                  submitBtn.disabled = false;
+                }
+              });
+          }, 1000);
+        });
+    });
+
+    cancelBtn.addEventListener('click', () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+      if (redirectTimeoutId) {
+        clearTimeout(redirectTimeoutId);
+        redirectTimeoutId = null;
+      }
+      progressText.textContent = "Processing canceled.";
+      progressBar.classList.remove('progress-bar-animated');
+      progressBar.classList.remove('bg-primary');
+      progressBar.classList.add('bg-danger');
+      cancelBtn.classList.add('d-none');
+      submitBtn.disabled = false;
+    });
+  </script>
+</body>
+</html>

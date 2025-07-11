@@ -1,0 +1,49 @@
+Source,Origin,Destination,Lane Currency,Origin Prov,Destination Prov,Inbound/Outbound,Rate,Mismatch Detail
+Excel,BRAMPTON,DC 20 Cornwall : CORNWALL : K6H7M11,CAD,ON,ON,Inbound,525.0,No match in PDF
+Excel,RUTHVEN,DC 20 Cornwall : CORNWALL : K6H7M27,CAD,ON,ON,Inbound,1944.8,No match in PDF
+Excel,KITCHENER,DC 20 Cornwall : CORNWALL : K6H7M16,CAD,ON,ON,Inbound,700.0,No match in PDF
+PDF,RUTHVEN,DC 20 Cornwall : CORNWALL : K6H7M4,CAD,ON,ON,Inbound,1944.8,No match in Excel
+Excel,Golden Boy Foods Ltd : BRAMPTON : L6T3T1,DC 20 Cornwall : CORNWALL : K6H7M19,CAD,ON,ON,Inbound,625.0,No match in PDF
+PDF,Sun Brite Foods : RUTHVEN : N0P2G0,DC 20 Cornwall : CORNWALL : K6H7M4,CAD,ON,ON,Inbound,1000.0,No match in Excel
+PDF,WINDSOR,DC 20 Cornwall : CORNWALL : K6H7M4,CAD,ON,ON,Inbound,1000.0,No match in Excel
+PDF,Shah Trading Company Ltd : SCARBOROUGH : M1P2R7,DC 20 Cornwall : CORNWALL : K6H7M4,CAD,ON,ON,Inbound,1015.04,No match in Excel
+PDF,MISSISSAUGA,DC 20 Cornwall : CORNWALL : K6H7M4,CAD,ON,ON,Inbound,700.0,No match in Excel
+PDF,MISSISSAUGA,DC 20 Cornwall : CORNWALL : K6H7M4,CAD,ON,ON,Inbound,950.0,No match in Excel
+Excel,Italpasta Ltd : BRAMPTON : L6T4E5,DC 20 Cornwall : CORNWALL : K6H7M15,CAD,ON,ON,Inbound,700.0,No match in PDF
+Excel,MISSISSAUGA,DC 20 Cornwall : CORNWALL : K6H7M21,CAD,ON,ON,Inbound,950.0,No match in PDF
+PDF,Golden Boy Foods Ltd : BRAMPTON : L6T3T1,DC 20 Cornwall : CORNWALL : K6H7M4,CAD,ON,ON,Inbound,625.0,No match in Excel
+Excel,GREATER TORONTO AREA,DC 20 Cornwall : CORNWALL : K6H7M9,CAD,ON,ON,Inbound,2.0,No match in PDF
+PDF,Unico Inc : CONCORD : L4K2A4,DC 20 Cornwall : CORNWALL : K6H7M4,CAD,ON,ON,Inbound,950.0,No match in Excel
+Excel,DB Schenker Canada : MILTON : L9T0M1,DC 20 Cornwall : CORNWALL : K6H7M12,CAD,ON,ON,Inbound,625.0,No match in PDF
+PDF,Italpasta Ltd : BRAMPTON : L6T4E5,DC 20 Cornwall : CORNWALL : K6H7M4,CAD,ON,ON,Inbound,700.0,No match in Excel
+PDF,GREATER TORONTO AREA,DC 20 Cornwall : CORNWALL : K6H7M4,CAD,ON,ON,Inbound,2.0,No match in Excel
+PDF,GREATER TORONTO AREA,DC 20 Cornwall : CORNWALL : K6H7M4,CAD,ON,ON,Inbound,2.0,No match in Excel
+Excel,Labatts : MISSISSAUGA : L5S0A1,DC 20 Cornwall : CORNWALL : K6H7M20,CAD,ON,ON,Inbound,700.0,No match in PDF
+Excel,MILTON,DC 20 Cornwall : CORNWALL : K6H7M25,CAD,ON,ON,Inbound,1000.0,No match in PDF
+PDF,E D Smith Sons Ltd : GEORGETOWN : L7G4R7,DC 20 Cornwall : CORNWALL : K6H7M4,CAD,ON,ON,Inbound,625.0,No match in Excel
+PDF,NEW HAMBURG,DC 20 Cornwall : CORNWALL : K6H7M4,CAD,ON,ON,Inbound,1000.0,No match in Excel
+Excel,E D Smith Sons Ltd : GEORGETOWN : L7G4R7,DC 20 Cornwall : CORNWALL : K6H7M18,CAD,ON,ON,Inbound,625.0,No match in PDF
+PDF,DB Schenker Canada : MILTON : L9T0M1,DC 20 Cornwall : CORNWALL : K6H7M4,CAD,ON,ON,Inbound,625.0,No match in Excel
+PDF,KITCHENER,DC 20 Cornwall : CORNWALL : K6H7M4,CAD,ON,ON,Inbound,700.0,No match in Excel
+Excel,GREATER TORONTO AREA,DC 20 Cornwall : CORNWALL : K6H7M7,CAD,ON,ON,Inbound,2.0,No match in PDF
+Excel,NEW HAMBURG,DC 20 Cornwall : CORNWALL : K6H7M23,CAD,ON,ON,Inbound,1000.0,No match in PDF
+Excel,ORANGEVILLE,DC 20 Cornwall : CORNWALL : K6H7M10,CAD,ON,ON,Inbound,1207.96,No match in PDF
+PDF,MILTON,DC 20 Cornwall : CORNWALL : K6H7M4,CAD,ON,ON,Inbound,1000.0,No match in Excel
+PDF,Labatts : MISSISSAUGA : L5S0A1,DC 20 Cornwall : CORNWALL : K6H7M4,CAD,ON,ON,Inbound,700.0,No match in Excel
+Excel,Unico Inc : CONCORD : L4K2A4,DC 20 Cornwall : CORNWALL : K6H7M5,CAD,ON,ON,Inbound,950.0,No match in PDF
+Excel,Johnvince Foods : NORTH YORK : M3J2B9,DC 20 Cornwall : CORNWALL : K6H7M22,CAD,ON,ON,Inbound,700.0,No match in PDF
+Excel,WINDSOR,DC 20 Cornwall : CORNWALL : K6H7M24,CAD,ON,ON,Inbound,1000.0,No match in PDF
+Excel,Pestell Pet Products : NEW HAMBURG : N3A2H1,DC 20 Cornwall : CORNWALL : K6H7M26,CAD,ON,ON,Inbound,1000.0,No match in PDF
+PDF,ORANGEVILLE,DC 20 Cornwall : CORNWALL : K6H7M4,CAD,ON,ON,Inbound,1207.96,No match in Excel
+PDF,Pestell Pet Products : NEW HAMBURG : N3A2H1,DC 20 Cornwall : CORNWALL : K6H7M4,CAD,ON,ON,Inbound,1000.0,No match in Excel
+PDF,ETOBICOKE,DC 20 Cornwall : CORNWALL : K6H7M4,CAD,ON,ON,Inbound,625.0,No match in Excel
+PDF,ETOBICOKE,DC 20 Cornwall : CORNWALL : K6H7M4,CAD,ON,ON,Inbound,625.0,No match in Excel
+Excel,Shah Trading Company Ltd : SCARBOROUGH : M1P2R7,DC 20 Cornwall : CORNWALL : K6H7M17,CAD,ON,ON,Inbound,1015.04,No match in PDF
+PDF,Johnvince Foods : NORTH YORK : M3J2B9,DC 20 Cornwall : CORNWALL : K6H7M4,CAD,ON,ON,Inbound,700.0,No match in Excel
+PDF,BRAMPTON,DC 20 Cornwall : CORNWALL : K6H7M4,CAD,ON,ON,Inbound,525.0,No match in Excel
+Excel,ETOBICOKE,DC 20 Cornwall : CORNWALL : K6H7M13,CAD,ON,ON,Inbound,625.0,No match in PDF
+Excel,ETOBICOKE,DC 20 Cornwall : CORNWALL : K6H7M8,CAD,ON,ON,Inbound,625.0,No match in PDF
+Excel,Sun Brite Foods : RUTHVEN : N0P2G0,DC 20 Cornwall : CORNWALL : K6H7M6,CAD,ON,ON,Inbound,1000.0,No match in PDF
+Excel,SCARBOROUGH,DC 20 Cornwall : CORNWALL : K6H7M28,CAD,ON,ON,Inbound,950.0,No match in PDF
+PDF,SCARBOROUGH,DC 20 Cornwall : CORNWALL : K6H7M4,CAD,ON,ON,Inbound,950.0,No match in Excel
+Excel,MISSISSAUGA,DC 20 Cornwall : CORNWALL : K6H7M14,CAD,ON,ON,Inbound,700.0,No match in PDF
